@@ -10,9 +10,9 @@ Volcengine Ark Coding Plan Usage
 - 实时监控 Coding Plan 用量（小时/周/月三个维度）
 - 自动高亮显示用量最高的维度
 - 简洁直观的进度条展示
+- Cookie 老化预警（7天 ⚠️ / 14天 🔴）
+- 从剪贴板一键更新 Cookie，无需手动编辑文件
 - 支持 xbar 和 SwiftBar 双平台
-
-<img width="450" alt="menu-bar-preview" src="demo/demo.png">
 
 ## 功能
 
@@ -21,6 +21,9 @@ Volcengine Ark Coding Plan Usage
   - 小时用量（5 小时滚动窗口）
   - 周用量（近 7 天）
   - 月度用量（近 30 天）
+- **快捷操作** — 下拉菜单底部提供：
+  - 从剪贴板更新 Cookie
+  - 打开火山方舟控制台
 
 ## 前置要求
 
@@ -47,28 +50,34 @@ chmod +x ~/Library/Application\ Support/xbar/plugins/ark_usage.5m.py
 
 插件需要从火山方舟控制台获取 Cookie 才能调用内部 API。
 
-**Cookie 文件保存位置**：`~/.config/ark_cookie.txt`（用户主目录下的 `.config` 文件夹中）
+**配置文件保存位置**：`~/.config/ark_config.json`
 
-### 获取 Cookie
+### 方式一：从剪贴板一键更新（推荐）
 
 1. **登录** [火山方舟控制台](https://console.volcengine.com/ark/region:ark+cn-beijing/openManagement)（保持登录状态）。
-2. **打开浏览器开发者工具**：
-   - Chrome：`F12` → 切换到 **Network**（网络）标签页
+2. **打开浏览器开发者工具**：`F12` → 切换到 **Network**（网络）标签页。
 3. **刷新页面**（`Cmd + R`），在 Network 列表中找到名为 `GetCodingPlanUsage` 的请求。
-4. **复制 Cookie**：
-   - 右键该请求 → `Copy` → `Copy as cURL`
-   - 从复制的命令中找到 `-b` 后面的字符串，即 Cookie 值
-   或者直接在 Request Headers 中复制 `Cookie` 字段的完整值。
+4. **复制为 cURL**：右键该请求 → `Copy` → `Copy as cURL`。
+5. **点击菜单栏** 下拉菜单中的 **"从剪贴板更新 Cookie"**。
 
-### 写入 Cookie 文件
+插件会自动从剪贴板的 curl 命令中解析 Cookie 和 `x-web-id`，写入配置文件。
+
+### 方式二：手动写入配置文件
 
 ```bash
 # 创建配置目录
 mkdir -p ~/.config
 
-# 将 Cookie 写入文件（注意保留完整字符串）
-echo '你的Cookie字符串' > ~/.config/ark_cookie.txt
+# 手动创建配置文件
+cat > ~/.config/ark_config.json << 'EOF'
+{
+  "cookie": "你的Cookie字符串",
+  "web_id": "你的x-web-id值"
+}
+EOF
 ```
+
+> `web_id` 可从 curl 命令中 `-H 'x-web-id: ...'` 处获取。
 
 ### 刷新插件
 
@@ -79,18 +88,20 @@ echo '你的Cookie字符串' > ~/.config/ark_cookie.txt
 
 ## 常见问题
 
-| 问题                | 原因                             | 解决                 |
-| ----------------- | ------------------------------ | ------------------ |
-| 菜单栏显示 "无 Cookie"  | `~/.config/ark_cookie.txt` 不存在 | 按上文步骤写入 Cookie     |
-| 菜单栏显示 "Cookie 过期" | Cookie 已失效                     | 重新登录控制台，获取新 Cookie |
-| 显示用量为 0%          | 当前周期内无 API 调用                  | 正常现象，有调用后自动更新      |
+| 问题 | 原因 | 解决 |
+| --- | --- | --- |
+| 菜单栏显示 "无Cookie" | 配置文件不存在 | 按上文步骤获取 Cookie |
+| 显示 "Cookie 过期" | Cookie 已失效 | 重新登录控制台，复制 curl 后点"从剪贴板更新 Cookie" |
+| 显示 "API错误: Invalid CSRF token" | Cookie 或 CSRF token 异常 | 重新获取 curl 并更新 |
+| 菜单栏标题带 ⚠️ 或 🔴 | Cookie 已超过 7/14 天未更新 | 建议尽快更新 Cookie |
+| 显示用量为 0% | 当前周期内无 API 调用 | 正常现象，有调用后自动更新 |
 
 ## 文件说明
 
-| 文件                | 说明                    |
-| ----------------- | --------------------- |
+| 文件 | 说明 |
+| --- | --- |
 | `ark_usage.5m.py` | xbar / SwiftBar 插件主程序 |
-| `README.md`       | 本文档                   |
+| `README.md` | 本文档 |
 
 ## License
 
