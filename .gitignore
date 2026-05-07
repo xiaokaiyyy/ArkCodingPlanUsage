@@ -23,5 +23,8 @@ __pycache__/
 # 日志文件
 *.log
 
+# Claude 配置
+CLAUDE.md
+
 # 测试目录
 demo/

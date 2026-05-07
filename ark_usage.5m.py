@@ -188,10 +188,29 @@ def get_usage():
 
     max_quota = max(quota, key=lambda q: q.get("Percent", 0))
     used_percent = max_quota.get("Percent", 0)
+    reset_ts = max_quota.get("ResetTimestamp")
+    max_label = LEVEL_LABELS.get(max_quota.get("Level", ""), max_quota.get("Level", ""))
 
     print(f"{used_percent:.0f}%{age_flag}")
     print("---")
     print("火山方舟 Coding Plan 用量")
+    if reset_ts:
+        now = time.time()
+        diff = reset_ts - now
+        if diff > 0:
+            days = int(diff // 86400)
+            hours = int((diff % 86400) // 3600)
+            minutes = int((diff % 3600) // 60)
+            parts = []
+            if days > 0:
+                parts.append(f"{days}天")
+            if hours > 0 or days > 0:
+                parts.append(f"{hours}小时")
+            parts.append(f"{minutes}分钟")
+            reset_str = "".join(parts)
+        else:
+            reset_str = "即将刷新"
+        print(f"限额（{max_label}）距刷新还剩 {reset_str}")
 
     for level in ("session", "weekly", "monthly"):
         record = quota_map.get(level)
