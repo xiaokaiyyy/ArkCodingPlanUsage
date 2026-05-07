@@ -2,7 +2,8 @@ Volcengine Ark Coding Plan Usage
 火山方舟Coding Plan用量监控插件
 =====================
 
-<br />
+![Preview](https://raw.githubusercontent.com/xiaokaiyyy/ArkCodingPlanUsage/main/preview.png)
+
 
 用于 macOS 菜单栏（xbar / SwiftBar）的火山方舟 Coding Plan 用量监控插件，实时显示 API 用量进度，帮助开发者及时了解资源使用情况。
 
