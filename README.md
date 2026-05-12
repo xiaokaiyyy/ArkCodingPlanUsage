@@ -5,7 +5,7 @@ Volcengine Ark Coding Plan Usage
 ![Preview](https://github.com/xiaokaiyyy/ArkCodingPlanUsage/blob/93ce873e888f131b658e038f2a1010a4cbe1df44/demo/demo.png)
 
 
-用于 macOS 菜单栏（xbar / SwiftBar）的火山方舟 Coding Plan 用量监控插件，实时显示 API 用量进度，帮助开发者及时了解资源使用情况。
+用于 macOS 菜单栏（SwiftBar）的火山方舟 Coding Plan 用量监控插件，实时显示 API 用量进度，帮助开发者及时了解资源使用情况。
 
 **特性亮点：**
 - 实时监控 Coding Plan 用量（小时/周/月三个维度）
@@ -14,7 +14,7 @@ Volcengine Ark Coding Plan Usage
 - 限额刷新倒计时（显示最高用量维度距重置还剩多久）
 - Cookie 老化预警（7天 ⚠️ / 14天 🔴）
 - 从剪贴板一键更新 Cookie，无需手动编辑文件
-- 支持 xbar 和 SwiftBar 双平台
+- 专为 SwiftBar 优化
 
 ## 功能
 
@@ -31,7 +31,7 @@ Volcengine Ark Coding Plan Usage
 ## 前置要求
 
 - macOS
-- [xbar](https://xbarapp.com/) 或 [SwiftBar](https://swiftbar.app/)
+- [SwiftBar](https://swiftbar.app/)
 
 ## 安装
 
@@ -40,11 +40,11 @@ Volcengine Ark Coding Plan Usage
 git clone https://github.com/xiaokaiyyy/ArkCodingPlanUsage.git
 cd ArkCodingPlanUsage
 
-# 2. 复制插件到 xbar 插件目录
-cp ark_usage.5m.py ~/Library/Application\ Support/xbar/plugins/
+# 2. 复制插件到 SwiftBar 插件目录
+cp ark_usage.5m.py ~/Library/Application\ Support/SwiftBar/plugins/
 
 # 3. 确保脚本有执行权限
-chmod +x ~/Library/Application\ Support/xbar/plugins/ark_usage.5m.py
+chmod +x ~/Library/Application\ Support/SwiftBar/plugins/ark_usage.5m.py
 ```
 
 > 文件名中的 `5m` 表示每 5 分钟自动刷新一次。可修改为 `1m`、`10m`、`30m` 等。
@@ -84,7 +84,6 @@ EOF
 
 ### 刷新插件
 
-- **xbar**：右键菜单栏图标 → Refresh
 - **SwiftBar**：右键菜单栏图标 → Refresh All
 
 刷新后，菜单栏应显示当前用量进度条。
