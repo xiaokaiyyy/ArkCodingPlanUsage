@@ -109,6 +109,14 @@ def render_bar(percent, width=5):
     return "●" * full + ("◐" if half else "") + "○" * (width - full - half)
 
 
+def render_bar_blocks(percent, width=5):
+    total = width * 2
+    filled = round(percent / 100 * total)
+    full = filled // 2
+    half = filled % 2
+    return "■" * full + ("◧" if half else "") + "□" * (width - full - half)
+
+
 def fetch_usage(cookie, web_id=None):
     csrf_token = extract_csrf_token(cookie)
     headers = {
@@ -212,13 +220,16 @@ def get_usage():
             reset_str = "即将刷新"
         print(f"限额（{max_label}）距刷新还剩 {reset_str}")
 
+    bar_style = cfg.get("bar_style", "dots")
+    bar_fn = render_bar_blocks if bar_style == "blocks" else render_bar
+
     for level in ("session", "weekly", "monthly"):
         record = quota_map.get(level)
         if record is None:
             continue
         pct = record.get("Percent", 0)
         label = LEVEL_LABELS.get(level, level)
-        print(f"{label}: {render_bar(pct)} {pct:.1f}%")
+        print(f"{label}: {bar_fn(pct)} {pct:.1f}%")
 
     print("---")
 
@@ -229,8 +240,24 @@ def get_usage():
         elif days >= COOKIE_WARN_DAYS:
             print(f"⚠️ Cookie 已 {days:.0f} 天未更新")
 
+    bar_style = cfg.get("bar_style", "dots")
+    if bar_style == "blocks":
+        print(f"切换为圆点进度条 | shell={SCRIPT_PATH} param1=toggle param2=bar-style terminal=false refresh=true")
+    else:
+        print(f"切换为方块进度条 | shell={SCRIPT_PATH} param1=toggle param2=bar-style terminal=false refresh=true")
+
     print(MENU_UPDATE_COOKIE)
     print(f"打开火山控制台 | href={CONSOLE_URL}")
+
+
+def toggle_bar_style():
+    cfg = load_config()
+    current = cfg.get("bar_style", "dots")
+    new = "blocks" if current == "dots" else "dots"
+    cfg["bar_style"] = new
+    save_config(cfg)
+    label = "方块" if new == "blocks" else "圆点"
+    print(f"已切换为{label}进度条")
 
 
 if __name__ == "__main__":
@@ -240,6 +267,10 @@ if __name__ == "__main__":
         else:
             print("剪贴板中未找到有效 Cookie")
             print("请先在浏览器 F12 → Network → 复制 curl 命令")
+        sys.exit(0)
+
+    if len(sys.argv) > 1 and sys.argv[1] == "toggle" and len(sys.argv) > 2 and sys.argv[2] == "bar-style":
+        toggle_bar_style()
         sys.exit(0)
 
     get_usage()
